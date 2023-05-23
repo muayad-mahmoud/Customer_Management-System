@@ -1,4 +1,4 @@
-Sure, I can help you write a simple README file for your customer management system project. Here's an example:
+
 
 # Customer Management System
 
