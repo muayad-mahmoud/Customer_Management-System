@@ -23,7 +23,7 @@ npm run start
 To start the backend API, run the following command:
 
 ```sh
-npm run server
+node index.js
 ```
 
 ## MongoDB Schema
@@ -44,3 +44,7 @@ The MongoDB schema for this project is a collection called "user" in a database 
 ## Acknowledgements
 
 This project was developed as part of an interview assessment for a company and is a simplified version of a full-fledged customer management system.
+
+
+## Disclaimer
+Please change API IP in frontend to use this
