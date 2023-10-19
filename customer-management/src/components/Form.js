@@ -9,6 +9,7 @@ import Dropzone from 'react-dropzone'
 import { useLocation } from 'react-router-dom';
 import { Carousel } from 'react-responsive-carousel';
 import { useNavigate } from 'react-router-dom';
+
 const Form = (props) => {
     const navigate = useNavigate();
     const person = useLocation();
@@ -21,24 +22,25 @@ const Form = (props) => {
         bname: '',
         company: '',
         taxNo: '',
-        PName: '',
-        PPhone: '',
-        Location: '',
-        Logo: '',
-        tartDate: '',
+        pName: '',
+        pPhone: '',
+        location: '',
+        logo: '',
+        startDate: '',
         endDate: '',
-        Images: []
+        images: []
 
     });
 
     useEffect(() => {
         if (person.state != null) {
-            setStart(new Date(person.state.StartDate));
-            setEnd(new Date(person.state.EndDate));
-            addFile(person.state.Images);
-            console.log(person.state.Images);
+            setStart(new Date(person.state.startDate));
+            setEnd(new Date(person.state.endDate));
+            addFile(person.state.images);
             setData(person.state);
-            console.log(typeof (data.Logo));
+            console.log(`State is ${JSON.stringify(person.state)}`);
+            console.log(`Data is ${JSON.stringify(data)}`);
+            console.log(typeof (data.logo));
         }
     }, []);
 
@@ -100,7 +102,7 @@ const Form = (props) => {
 
                 try {
 
-                    const res = await axios.put("http://localhost:3005/editUser", formData);
+                    const res = await axios.put(`https://localhost:7246/api/User/${data.id}`, formData);
 
                     console.log(res);
                     navigate('/users')
@@ -129,7 +131,8 @@ const Form = (props) => {
                 }
 
                 try {
-                    const res = await axios.post("http://localhost:3005/dataRegister", formData);
+                    console.log(data);
+                    const res = await axios.post("https://localhost:7246/api/User/upload", formData);
                     window.location.reload(false);
                     console.log(res);
                 } catch (error) {
@@ -147,7 +150,7 @@ const Form = (props) => {
 
 
                 {
-                    data.Logo != null ? <div className='w-full items-center flex mx-auto'><img className=" mx-auto h-32 w-32 rounded-full inline-block justify-self-center" src={typeof (data.Logo) === "string" ? `http://localhost:3005` + data.Logo.slice(1) : URL.createObjectURL(data.Logo)} alt="" /></div> : <div></div>
+                    data.logo != null ? <div className='w-full items-center flex mx-auto'><img className=" mx-auto h-32 w-32 rounded-full inline-block justify-self-center" src={typeof (data.logo) === "string" ? `https://localhost:7246/api/User/uploads/` + data.logo : URL.createObjectURL(data.logo)} alt="" /></div> : <div></div>
                 }
                 {
                     window.location.href.includes('editUser') ? <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900" >Edit Tenant</h2> : <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900" >Create Tenant</h2>
@@ -156,9 +159,9 @@ const Form = (props) => {
 
                 <Input style='input' name='company' label='Company Name' type="text" patternn="^[a-zA-Z0-9,\s]+$" onChanged={handleChange} value={data.company} />
                 <Input style='input' name='taxNo' label='Tax number' type="number" patternn="[0-9]" onChanged={handleChange} value={data.taxNo} />
-                <Input style='input' name='PName' label='Contact Person Name' patternn="^[^\s]+[a-zA-Z0-9\s]+$" type="text" onChanged={handleChange} value={data.PName} />
-                <Input style='input' name='PPhone' label='Contact Person Phone' type="tel" patternn="[0-9]{11}" max_length="11" onChanged={handleChange} value={data.PPhone} />
-                <Input style='input' name='Location' label='Shop Location in The Mall' patternn="^[a-zA-Z0-9,\s]+$" type="text" onChanged={handleChange} value={data.Location} />
+                <Input style='input' name='pName' label='Contact Person Name' patternn="^[^\s]+[a-zA-Z0-9\s]+$" type="text" onChanged={handleChange} value={data.pName} />
+                <Input style='input' name='pPhone' label='Contact Person Phone' type="tel" patternn="[0-9]{11}" max_length="11" onChanged={handleChange} value={data.pPhone} />
+                <Input style='input' name='location' label='Shop location in The Mall' patternn="^[a-zA-Z0-9,\s]+$" type="text" onChanged={handleChange} value={data.location} />
                 <div className='w-full flex justify-evenly'>
 
 
@@ -183,13 +186,13 @@ const Form = (props) => {
                         setEnd(date2);
                         console.log(date2);
                         // eslint-disable-next-line no-useless-computed-key
-                        setData({ ...data, ['EndDate']: endDate });
+                        setData({ ...data, ['endDate']: endDate });
 
                     }} />
 
 
                 </div>
-                <Filecomponent label_text='Upload' name='Logo' onChanged={handleFileChange} />
+                <Filecomponent label_text='Upload' name='logo' onChanged={handleFileChange} />
                 <Dropzone accept={acceptedFileTypes} onDropAccepted={async (acceptedFiles) => {
                     await handleFileUpload(acceptedFiles);
                 }
@@ -226,22 +229,22 @@ const Form = (props) => {
                         </section>
                     )}
                 </Dropzone>
-                {data.Images.length !== 0 ? <Carousel autoPlay={true} showThumbs={false} infiniteLoop={true} showArrows={false}>
+                {data.images.length !== 0 ? <Carousel autoPlay={true} showThumbs={false} infiniteLoop={true} showArrows={false}>
                     {
-                        data.Images.map((image, index) => (
+                        data.images.map((image, index) => (
                             <div className=' relative min-h-full'>
                                 <div className=' absolute bg-white w-5'>
                                     <span key={index} className=' text-red-500' onClick={() => {
-                                        var index = data.Images.indexOf(image);
-                                        var temp_data = data.Images;
+                                        var index = data.images.indexOf(image);
+                                        var temp_data = data.images;
                                         temp_data.splice(index, 1);
                                         console.log(temp_data);
                                         addFile([...temp_data]);
-                                        setData({ ...data, ['Images']: temp_data })
+                                        setData({ ...data, ['images']: temp_data })
 
                                     }}>&times;</span>
                                 </div>
-                                <div className='w-full items-center flex mx-auto'><img className=" object-cover mx-auto h-32 w-32 inline-block justify-self-center" src={`http://localhost:3005` + image.slice(1)} alt="" /></div>
+                                <div className='w-full items-center flex mx-auto'><img className=" object-cover mx-auto h-32 w-32 inline-block justify-self-center" src={`https://localhost:7246/api/User/uploads/` + image} alt="" /></div>
                             </div>
                         ))
                     }

@@ -14,11 +14,8 @@ const QrProfile = (props) => {
 
     async function fetchUser(id) {
         try {
-            await axios.get('http://localhost:3005/getuser', {
-                params: {
-                    id: id
-                }
-            }).then((response) => {
+            await axios.get(`http://localhost:7246/api/User/${id}`).then((response) => {
+                console.log(response.data);
                 const dataRecieved = response.data;
                 setData({ ...dataRecieved });
 

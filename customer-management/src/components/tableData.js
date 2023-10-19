@@ -46,7 +46,7 @@ const Table = (props) => {
         // console.log(paginationCount.count);
         try {
             if (initial) {
-                await axios.get('http://localhost:3005/getData', {
+                await axios.get('https://localhost:7246/api/User', {
                     params: {
                         start: paginationCount.start,
                         count: paginationCount.count
@@ -54,7 +54,7 @@ const Table = (props) => {
                 }).then((response) => {
                     if (!(Object.keys(response.data).length === 0)) {
                         const dataz = response.data;
-
+                        console.log(dataz);
                         setData(dataz);
 
                     }
@@ -64,7 +64,7 @@ const Table = (props) => {
             else {
                 if (steps > 0) {
 
-                    await axios.get('http://localhost:3005/getData', {
+                    await axios.get('https://localhost:7246/api/User', {
                         params: {
                             start: paginationCount.start + steps,
                             count: paginationCount.count + steps
@@ -98,7 +98,7 @@ const Table = (props) => {
                             //     console.log(steps)
                             // }
 
-                            await axios.get('http://localhost:3005/getData', {
+                            await axios.get('https://localhost:7246/api/User', {
                                 params: {
                                     start: paginationCount.start + steps,
                                     count: paginationCount.count + steps
@@ -136,9 +136,9 @@ const Table = (props) => {
         const formData = new FormData()
         formData.append('id', id)
         try {
-            await axios.delete('http://localhost:3005/deleteUser', { data: formData }).then((response) => {
+            await axios.delete(`https://localhost:7246/api/User/${id}`).then((response) => {
                 console.log(response.status)
-                if (response.status === 200) {
+                if (response.status === 200 || response.status === 204) {
                     var index = data.indexOf(person);
                     console.log(index)
                     if (index !== -1) {
@@ -201,15 +201,15 @@ const Table = (props) => {
             <Modal
                 isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles}>
                 <div id='printable' className=' w-auto lg:w-full flex justify-normal'>
-                    <QRCode size={256} value={personData._id} />
+                    <QRCode size={256} value={personData.id} />
                     <div className='mx-5 flex '>
 
                         <ul>
                             <li className='py-3'>{'Bname: ' + personData.bname}</li>
                             <li className='py-3'>{'Company: ' + personData.company}</li>
-                            <li className='py-3'>{'Owner Name: ' + personData.PName}</li>
-                            <li className='py-3'>{'Owner Phone: ' + personData.PPhone}</li>
-                            <li className='py-3'>{'Location: ' + personData.Location}</li>
+                            <li className='py-3'>{'Owner Name: ' + personData.pName}</li>
+                            <li className='py-3'>{'Owner Phone: ' + personData.pPhone}</li>
+                            <li className='py-3'>{'Location: ' + personData.location}</li>
 
                         </ul>
 
@@ -301,7 +301,7 @@ const Table = (props) => {
 
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-10 w-10">
-                                                            <img className="h-10 w-10 rounded-full" src={`http://localhost:3005` + person.Logo.slice(1)} alt="" />
+                                                            <img className="h-10 w-10 rounded-full" src={`https://localhost:7246/api/User/uploads/${person.logo}:${person.id}`} alt="" />
                                                         </div>
                                                         <div className="ml-4">
                                                             <a className="text-indigo-600 hover:text-indigo-900" onClick={() => { printQR(person) }}>{person.bname}</a>
@@ -310,24 +310,30 @@ const Table = (props) => {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-900">{'+20' + person.PPhone}</div>
+                                                    <div className="text-sm text-gray-900">{'+20' + person.pPhone}</div>
                                                     <div className="text-sm text-gray-500">{person.department}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-
+                                                    <div>
+                                                        {person.startDate > person.endDate ? <div className='rounded-full text-sm bg-green-400 p-2'>
+                                                            Expired
+                                                        </div> : <div className='rounded-full text-sm bg-red-300 p-2'>
+                                                            Expired
+                                                        </div>}
+                                                    </div>
 
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {person.Location}
+                                                    {person.location}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {person.taxNo}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {new Date(person.StartDate).toLocaleDateString("en-US")}
+                                                    {new Date(person.startDate).toLocaleDateString("en-US")}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {new Date(person.EndDate).toLocaleDateString("en-US")}
+                                                    {new Date(person.endDate).toLocaleDateString("en-US")}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <a className="text-indigo-600 hover:text-indigo-900" onClick={() => navigate(`/editUser`, { state: person })}>
@@ -336,7 +342,7 @@ const Table = (props) => {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <a className="text-indigo-600 hover:text-indigo-900" onClick={async () => {
-                                                        await deleteUser(person._id, person);
+                                                        await deleteUser(person.id, person);
 
                                                     }}>
                                                         Delete
